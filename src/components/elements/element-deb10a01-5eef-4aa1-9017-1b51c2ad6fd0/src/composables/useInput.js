@@ -71,6 +71,9 @@ export function useInput(props, emit) {
         { immediate: true }
     );
 
+    watch(defaultValue, () => {
+        setValue(defaultValue.value);
+    });
 
     const inputType = computed(() => {
         if (!props.content) return 'text';
