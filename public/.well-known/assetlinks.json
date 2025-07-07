@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.zerofold.animalmitra",
+      "sha256_cert_fingerprints": [
+        "5A:FE:D4:C6:36:71:B7:EF:48:53:72:95:4F:92:CD:F1:D8:0B:52:65:4C:96:38:B1:7F:5F:2B:0E:88:6A:D3:40"
+      ]
+    }
+  }
+]
