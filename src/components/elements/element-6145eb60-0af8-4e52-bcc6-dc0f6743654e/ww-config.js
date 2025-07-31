@@ -180,10 +180,12 @@ export default {
         displayAllowedValues: ['block'],
         //ignoredStyleProperties: ['border','borderRadius','background','outline'],
     },
-    states: ['readonly'],
+    states: ['focus', 'readonly'],
     triggerEvents: [
         { name: 'change', label: { en: 'On change' }, event: { value: '' }, default: true },
         { name: 'initValueChange', label: { en: 'On init value change' }, event: { value: '' } },
+        { name: 'focus', label: { en: 'On focus' }, event: { value: '' } },
+        { name: 'blur', label: { en: 'On blur' }, event: { value: '' } },
     ],
     actions: [
         {
@@ -231,6 +233,11 @@ export default {
         {
             label: 'Reset search',
             action: 'actionResetSearch',
+            args: [],
+        },
+        {
+            label: 'Focus',
+            action: 'actionFocusInput',
             args: [],
         },
     ],
@@ -711,7 +718,7 @@ export default {
             type: 'Formula',
             defaultValue: '',
             states: true,
-            bindable: true,
+            bindable: false,
             responsive: true,
             hidden: (content, sidePanelContent) => !sidePanelContent.form?.uid || !content.customValidation,
         },
