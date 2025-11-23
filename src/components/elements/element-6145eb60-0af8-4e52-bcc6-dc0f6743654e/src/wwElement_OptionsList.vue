@@ -1,11 +1,33 @@
 <template>
+    <!-- Heavy Mode: RecycleScroller for better performance with large lists -->
+    <RecycleScroller
+        v-if="heavyMode && filteredOptions.length > 0"
+        class="scroller"
+        :style="scrollerStyle"
+        :items="dynamicScrollerItems"
+        :item-size="itemSize"
+        :buffer="virtualScrollBuffer"
+        :key="'heavy-' + filteredOptions.length"
+        key-field="id"
+    >
+        <template v-slot="{ item, index }">
+            <wwLayoutItemContext :key="index" is-repeat :index="index" :data="item">
+                <div :style="index != filteredOptions.length - 1 ? { paddingBottom: content.optionSpacing } : {}">
+                    <ww-element-option :local-data="item" :content="content" :wwEditorState="wwEditorState" />
+                </div>
+            </wwLayoutItemContext>
+        </template>
+    </RecycleScroller>
+
+    <!-- Normal Mode: DynamicScroller with automatic size detection -->
     <DynamicScroller
-        v-if="/*virtualScroll &&*/ filteredOptions.length > 0"
-        style="height: 100%"
+        v-else-if="!heavyMode && filteredOptions.length > 0"
+        class="scroller"
+        :style="scrollerStyle"
         :items="dynamicScrollerItems"
         :min-item-size="virtualScrollMinItemSize"
         :buffer="virtualScrollBuffer"
-        :key="filteredOptions.length"
+        :key="'dynamic-' + filteredOptions.length"
     >
         <template v-slot="{ item, index, active }">
             <DynamicScrollerItem
@@ -23,34 +45,22 @@
         </template>
     </DynamicScroller>
 
-    <!-- <div v-else-if="!virtualScroll && filteredOptions.length > 0" style="height: 100%;overflow: auto;">
-        <wwLayoutItemContext
-            v-for="(item, index) in filteredOptions"
-            :key="index"
-            is-repeat
-            :index="index"
-            :data="item"
-        >
-            <ww-element-option :local-data="item" :content="content" :wwEditorState="wwEditorState" />
-        </wwLayoutItemContext>
-    </div> -->
-
     <div v-show="filteredOptions.length === 0 || showEmptyStateInEditor" :style="emptyStateStyle">
         <span>{{ emptyStateText }}</span>
-        <!-- <wwElement v-bind="content.emptyStateContainer" /> -->
     </div>
 </template>
 
 <script>
 import InputSelectOption from './wwElement_Option.vue';
 import { ref, inject, computed, watch } from 'vue';
-import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller';
+import { DynamicScroller, DynamicScrollerItem, RecycleScroller } from 'vue-virtual-scroller';
 import { useMemoize } from '@vueuse/core';
 
 export default {
     components: {
         DynamicScroller,
         DynamicScrollerItem,
+        RecycleScroller,
         'ww-element-option': InputSelectOption,
     },
     props: {
@@ -74,10 +84,10 @@ export default {
         const searchState = inject('_wwSelect:searchState', ref(null));
         const { updateSearch } = inject('_wwSelect:useSearch', {});
         const registerOptionProperties = inject('_wwSelect:registerOptionProperties', () => {});
-        const virtualScroll = computed(() => props.content.virtualScroll);
-        const virtualScrollSizeDependencies = computed(() => props.content.virtualScrollSizeDependencies);
-        const virtualScrollMinItemSize = computed(() => props.content.virtualScrollMinItemSize || 40);
-        const virtualScrollBuffer = computed(() => props.content.virtualScrollBuffer || 400);
+        const virtualScrollMinItemSize = computed(() => props.content.virtualScrollMinItemSize);
+        const virtualScrollBuffer = computed(() => props.content.virtualScrollBuffer);
+        const heavyMode = computed(() => props.content.heavyMode);
+        const itemSize = computed(() => props.content.itemSize);
 
         const emptyStateText = computed(() => wwLib.wwLang.getText(props.content.emptyStateText));
 
@@ -158,6 +168,15 @@ export default {
         });
 
         // Styles
+        const scrollerStyle = computed(() => {
+            // Use flex: 1 to take all available space in the flex container
+            // This ensures the scroller has a definite height for virtual scrolling
+            return {
+                flex: '1',
+                'min-height': '0', // Important for flex children to shrink below content size
+            };
+        });
+
         const emptyStateStyle = computed(() => {
             return {
                 'font-family': props.content.emptyStateFontFamily,
@@ -184,12 +203,13 @@ export default {
         return {
             emptyStateText,
             filteredOptions,
-            virtualScroll,
-            virtualScrollSizeDependencies,
             virtualScrollMinItemSize,
             virtualScrollBuffer,
+            heavyMode,
+            itemSize,
             showEmptyStateInEditor,
             dynamicScrollerItems,
+            scrollerStyle,
             emptyStateStyle,
         };
     },

@@ -168,13 +168,28 @@ export default {
         // Styles
         const syncFloating = () => {
             if (!triggerElement?.value) return;
-            const triggerElementBounding = triggerElement.value.getBoundingClientRect();
+            const triggerRect = triggerElement.value.getBoundingClientRect();
+            const offsetY = parseInt(props.content.offsetY) || 0;
+            const offsetX = parseInt(props.content.offsetX) || 0;
+            const viewportHeight = wwLib.getFrontWindow()?.innerHeight || window.innerHeight;
+
+            let top = triggerRect.bottom + offsetY;
+
+            const actualDropdownHeight = dropdownElement.value?.getBoundingClientRect().height || 0;
+            const estimatedDropdownHeight = parseInt(props.content.dropdownMaxHeight) || 300;
+            const dropdownHeight = actualDropdownHeight > 50 ? actualDropdownHeight : estimatedDropdownHeight;
+
+            const spaceBelow = viewportHeight - triggerRect.bottom;
+            const spaceAbove = triggerRect.top;
+
+            if (dropdownHeight > spaceBelow && spaceAbove > spaceBelow) {
+                top = triggerRect.top - dropdownHeight - offsetY;
+            }
+
             floatingStyles.value = {
                 position: 'absolute',
-                top: `${
-                    triggerElementBounding.top + triggerElementBounding.height + parseInt(props.content.offsetY)
-                }px`,
-                left: `${triggerElementBounding.left + parseInt(props.content.offsetX)}px`,
+                top: `${top}px`,
+                left: `${triggerRect.left + offsetX}px`,
             };
         };
         let floatingStyles = ref({});
@@ -199,14 +214,18 @@ export default {
                       'border-left': props.content.dropdownBorderLeft,
                   };
 
+            // Use default max-height of 500px if not defined, required for virtual scrolling
+            const maxHeight = props.content.dropdownMaxHeight || '500px';
+
             return {
                 width: props.content.dropdownWidth,
-                'max-height': props.content.dropdownMaxHeight,
+                'max-height': maxHeight,
                 'border-radius': props.content.dropdownBorderRadius,
                 padding: props.content.dropdownPadding,
                 'background-color': props.content.dropdownBgColor,
                 'box-shadow': props.content.dropdownShadows,
-                overflow: 'auto',
+                display: 'flex',
+                'flex-direction': 'column',
                 ...dropdownBorderCss,
             };
         });
@@ -392,18 +411,29 @@ export default {
 
         function openDropdown() {
             if (isDisabled.value || isReadonly.value) return;
-            const triggerElementBounding = triggerElement.value.getBoundingClientRect();
+            if (!triggerElement?.value) return;
+
+            const triggerRect = triggerElement.value.getBoundingClientRect();
+            const offsetY = parseInt(props.content.offsetY) || 0;
+            const offsetX = parseInt(props.content.offsetX) || 0;
+
+            // Initial positioning: always below the trigger
+            // syncFloating() will adjust with actual dropdown height after render
             floatingStyles.value = {
                 position: 'absolute',
-                top: `${
-                    triggerElementBounding.top + triggerElementBounding.height + parseInt(props.content.offsetY)
-                }px`,
-                left: `${triggerElementBounding.left + parseInt(props.content.offsetX)}px`,
+                top: `${triggerRect.bottom + offsetY}px`,
+                left: `${triggerRect.left + offsetX}px`,
             };
 
             isOpen.value = true;
-            nextTick(syncFloating);
-            if (autoFocusSearch.value) focusSearch();
+
+            nextTick(() => {
+                // Wait for browser to complete layout calculations
+                requestAnimationFrame(() => {
+                    syncFloating();
+                    if (autoFocusSearch.value) focusSearch();
+                });
+            });
         }
 
         function closeDropdown() {
@@ -631,12 +661,20 @@ export default {
         wheelEvent = 'onwheel' in document.createElement('div') ? 'wheel' : 'mousewheel';
 
         const preventDefault = e => {
+            // Allow scrolling inside the dropdown element
+            if (dropdownElement.value && dropdownElement.value.contains(e.target)) {
+                return;
+            }
             e.preventDefault();
         };
 
         const preventDefaultForScrollKeys = e => {
             const keys = { 37: 1, 38: 1, 39: 1, 40: 1 };
             if (keys[e.keyCode]) {
+                // Allow scrolling inside the dropdown element
+                if (dropdownElement.value && dropdownElement.value.contains(document.activeElement)) {
+                    return;
+                }
                 preventDefault(e);
                 return false;
             }
@@ -875,6 +913,7 @@ export default {
             });
             wwLib.getFrontDocument().addEventListener('click', handleClickOutside);
             wwLib.getFrontWindow().addEventListener('scroll', syncFloating);
+            wwLib.getFrontWindow().addEventListener('resize', syncFloating);
         });
 
         onBeforeUnmount(() => {
@@ -884,6 +923,8 @@ export default {
             }
             revertBlockScrolling();
             wwLib.getFrontDocument().removeEventListener('click', handleClickOutside);
+            wwLib.getFrontWindow().removeEventListener('scroll', syncFloating);
+            wwLib.getFrontWindow().removeEventListener('resize', syncFloating);
         });
 
         watch(

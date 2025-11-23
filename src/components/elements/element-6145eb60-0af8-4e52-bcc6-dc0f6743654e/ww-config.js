@@ -1,147 +1,176 @@
-const virtualScrollHelp =
-    'Virtual scrolling optimizes performance by only rendering visible options and a small buffer around them. When enabled, this feature can significantly improve loading and scrolling performance for large lists.</br></br>Important notes:</br>- The layout will be forced to a vertical list format</br>- Option items must be positioned at the root level of the Options List';
-
 const bufferHelp =
-    'The buffer is the amount of pixel to add to edges of the scrolling visible area to start rendering items further away.';
+    'The buffer is the amount of pixels to add to edges of the scrolling visible area to start rendering items further away. Virtual scrolling is always enabled and optimizes performance by only rendering visible options.';
 
-const minItemSizeHelp = 'The minimum height of an item in the virtual scroll.';
+const minItemSizeHelp =
+    'The minimum height of an item in pixels. Used by the dynamic scroller to estimate sizes before items are rendered.';
+
+const heavyModeHelp =
+    'Heavy mode uses RecycleScroller for better performance with large lists (1000+ items). When enabled, you must specify the exact item size. When disabled, DynamicScroller is used which automatically detects item sizes but may be slower with very large lists.';
+
+const itemSizeHelp =
+    'The exact height (in pixels) of each option item. All items must have the same height when using heavy mode.';
 
 export default {
     editor: {
         label: 'Select',
         icon: 'select',
         customStylePropertiesOrder: [
-            [
-                'selectedTitle',
-                'selectedFontFamily',
-                'selectedFontSize',
-                'selectedFontWeight',
-                'selectedFontColor',
-                'selectedPadding',
-                'selectedTextAlign',
-            ],
-            [
-                'placeholderTitle',
-                'placeholderFontFamily',
-                'placeholderFontSize',
-                'placeholderFontWeight',
-                'placeholderFontColor',
-                'placeholderTextAlign',
-            ],
-            [
-                'chipStylesTitle',
-                'chipFontFamily',
-                'chipFontSize',
-                'chipFontWeight',
-                'chipFontColor',
-                'chipPadding',
-                'chipBgColor',
-                'chipBorder',
-                'chipBorderAll',
-                'chipBorderTop',
-                'chipBorderRight',
-                'chipBorderBottom',
-                'chipBorderLeft',
-                'chipBorderRadius',
-                'chipIconUnselect',
-                'chipIconColor',
-                'chipIconSize',
-                'chipImageSize',
-                'chipImageRadius',
-            ],
-            [
-                'triggerStylesTitle',
-                'triggerHeight',
-                'triggerBorder',
-                'triggerBorderAll',
-                'triggerBorderTop',
-                'triggerBorderRight',
-                'triggerBorderBottom',
-                'triggerBorderLeft',
-                'triggerBorderRadius',
-                'triggerBgColor',
-                'triggerShadows',
-                'triggerPadding',
-                'triggerMargin',
-                'triggerIconClose',
-                'triggerIconOpen',
-                'triggerIconSize',
-                'triggerIconColor',
-                'triggerImageSize',
-                'triggerImageRadius',
-            ],
-            [
-                'dropdownStylesTitle',
-                'side',
-                'align',
-                'offsetX',
-                'offsetY',
-                'boundOffset',
-                'dropdownWidth',
-                'dropdownMaxHeight',
-                'dropdownBorder',
-                'dropdownBorderAll',
-                'dropdownBorderTop',
-                'dropdownBorderRight',
-                'dropdownBorderBottom',
-                'dropdownBorderLeft',
-                'dropdownBorderRadius',
-                'dropdownBgColor',
-                'dropdownShadows',
-                'dropdownPadding',
-                'zIndexOpen',
-            ],
-            [
-                'optionStylesTitle',
-                'optionFontFamily',
-                'optionFontSize',
-                'optionFontWeight',
-                'optionFontColor',
-                'optionSpacing',
-                'optionPadding',
-                'optionBorder',
-                'optionBorderRadius',
-                'optionBgColor',
-                'optionBgColorFocused',
-                'optionBgColorHover',
-                'optionCursor',
-                'optionIcon',
-                'optionIconSize',
-                'optionIconColor',
-                'optionImageSize',
-                'optionImageRadius',
-            ],
-            [
-                'emptyStateStylesTitle',
-                'emptyStateFontFamily',
-                'emptyStateFontSize',
-                'emptyStateFontWeight',
-                'emptyStateFontColor',
-                'emptyStatePadding',
-                'emptyStateTextAlign',
-            ],
-            [
-                'searchStylesTitle',
-                'searchWidth',
-                'searchHeight',
-                'searchBorder',
-                'searchBorderAll',
-                'searchBorderTop',
-                'searchBorderRight',
-                'searchBorderBottom',
-                'searchBorderLeft',
-                'searchBorderRadius',
-                'searchPadding',
-                'searchMargin',
-                'searchOutline',
-                'searchOutlineOffset',
-                'searchBgColor',
-                'searchFontFamily',
-                'searchFontSize',
-                'searchFontWeight',
-                'searchFontColor',
-                'searchPlaceholderColor',
-            ],
+            {
+                label: "Selected",
+                isCollapsible: true,
+                properties: [
+                    'selectedFontFamily',
+                    'selectedFontSize',
+                    'selectedFontWeight',
+                    'selectedFontColor',
+                    'selectedPadding',
+                    'selectedTextAlign',
+                ],
+            },
+            {
+                label: "Placeholder",
+                isCollapsible: true,
+                properties:       [
+                    'placeholderFontFamily',
+                    'placeholderFontSize',
+                    'placeholderFontWeight',
+                    'placeholderFontColor',
+                    'placeholderTextAlign',
+                ],
+            },
+            {
+                label: "Chip",
+                isCollapsible: true,
+                properties: [
+                    'chipFontFamily',
+                    'chipFontSize',
+                    'chipFontWeight',
+                    'chipFontColor',
+                    'chipPadding',
+                    'chipBgColor',
+                    'chipBorder',
+                    'chipBorderAll',
+                    'chipBorderTop',
+                    'chipBorderRight',
+                    'chipBorderBottom',
+                    'chipBorderLeft',
+                    'chipBorderRadius',
+                    'chipIconUnselect',
+                    'chipIconColor',
+                    'chipIconSize',
+                    'chipImageSize',
+                    'chipImageRadius',
+                ],
+            },
+            {
+                label: "Trigger",
+                isCollapsible: true,
+                properties: [
+                    'triggerHeight',
+                    'triggerBorder',
+                    'triggerBorderAll',
+                    'triggerBorderTop',
+                    'triggerBorderRight',
+                    'triggerBorderBottom',
+                    'triggerBorderLeft',
+                    'triggerBorderRadius',
+                    'triggerBgColor',
+                    'triggerShadows',
+                    'triggerPadding',
+                    'triggerMargin',
+                    'triggerIconClose',
+                    'triggerIconOpen',
+                    'triggerIconSize',
+                    'triggerIconColor',
+                    'triggerImageSize',
+                    'triggerImageRadius',
+                ],
+            },
+            {
+                label: "Dropdown",
+                isCollapsible: true,
+                properties: [
+                    'side',
+                    'align',
+                    'offsetX',
+                    'offsetY',
+                    'boundOffset',
+                    'dropdownWidth',
+                    'dropdownMaxHeight',
+                    'noMaxHeightInfobox',
+                    'dropdownBorder',
+                    'dropdownBorderAll',
+                    'dropdownBorderTop',
+                    'dropdownBorderRight',
+                    'dropdownBorderBottom',
+                    'dropdownBorderLeft',
+                    'dropdownBorderRadius',
+                    'dropdownBgColor',
+                    'dropdownShadows',
+                    'dropdownPadding',
+                    'zIndexOpen',
+                ],
+            },
+            {
+                label: "Option",
+                isCollapsible: true,
+                properties: [
+                    'optionFontFamily',
+                    'optionFontSize',
+                    'optionFontWeight',
+                    'optionFontColor',
+                    'optionSpacing',
+                    'optionPadding',
+                    'optionBorder',
+                    'optionBorderRadius',
+                    'optionBgColor',
+                    'optionBgColorFocused',
+                    'optionBgColorHover',
+                    'optionCursor',
+                    'optionIcon',
+                    'optionIconSize',
+                    'optionIconColor',
+                    'optionImageSize',
+                    'optionImageRadius',
+                ],
+            },
+            {
+                label: "Empty state",
+                isCollapsible: true,
+                properties: [
+                    'emptyStateFontFamily',
+                    'emptyStateFontSize',
+                    'emptyStateFontWeight',
+                    'emptyStateFontColor',
+                    'emptyStatePadding',
+                    'emptyStateTextAlign',
+                ],
+            },
+            {
+                label: "Search",
+                isCollapsible: true,
+                properties: [
+                    'searchWidth',
+                    'searchHeight',
+                    'searchBorder',
+                    'searchBorderAll',
+                    'searchBorderTop',
+                    'searchBorderRight',
+                    'searchBorderBottom',
+                    'searchBorderLeft',
+                    'searchBorderRadius',
+                    'searchPadding',
+                    'searchMargin',
+                    'searchOutline',
+                    'searchOutlineOffset',
+                    'searchBgColor',
+                    'searchFontFamily',
+                    'searchFontSize',
+                    'searchFontWeight',
+                    'searchFontColor',
+                    'searchPlaceholderColor',
+                ],
+            },
         ],
         customSettingsPropertiesOrder: [
             'forceOpenInEditor',
@@ -156,30 +185,44 @@ export default {
             'initValueSingle',
             'initValueMulti',
             'allowScrollingWhenOpen',
-            [
-                'triggerTitle',
-                'placeholder',
-                'emptyStateText',
-                'searchPlaceholder',
-                'initialState',
-                'selectType',
-                'selectTypeWarning',
-            ],
-            [
-                'optionsTitle',
-                'disabled',
-                'required',
-                'readonly',
-                'limit',
-                'unselectOnClick',
-                'closeOnSelect',
-                'closeOnClickOutside',
-                'manualTrigger',
-                'selectOnClick',
-                'virtualScrollBuffer',
-                'virtualScrollMinItemSize',
-            ],
-            ['searchTitle', 'showSearch', 'searchBy', 'autoFocus'],
+            {
+                label: "Trigger",
+                isCollapsible: true,
+                properties: [
+                    'placeholder',
+                    'emptyStateText',
+                    'searchPlaceholder',
+                    'initialState',
+                    'selectType',
+                    'selectTypeWarning',
+                ],
+            },
+            {
+                label: "Options",
+                isCollapsible: true,
+                properties: [
+                    'disabled',
+                    'required',
+                    'readonly',
+                    'limit',
+                    'unselectOnClick',
+                    'closeOnSelect',
+                    'closeOnClickOutside',
+                    'manualTrigger',
+                    'selectOnClick',
+                    'virtualScroll',
+                    'virtualScrollBuffer',
+                    'virtualScrollMinItemSize',
+                    'heavyMode',
+                    'heavyModeInfobox',
+                    'itemSize',
+                ],
+            },  
+            {
+                label: "Search",
+                isCollapsible: true,
+                properties: ['searchTitle', 'showSearch', 'searchBy', 'autoFocus'],
+            },        
             'formInfobox',
             ['fieldName', 'customValidation', 'validation'],
         ],
@@ -457,15 +500,6 @@ export default {
         },
 
         // >>>>>>>>>>> TRIGGER <<<<<<<<<<
-        triggerTitle: {
-            section: 'settings',
-            hidden: content => content.customMenu,
-            type: 'Title',
-            label: {
-                en: 'Trigger',
-            },
-            editorOnly: true,
-        },
         placeholder: {
             label: {
                 en: 'Placeholder',
@@ -603,34 +637,14 @@ export default {
         },
 
         // >>>>>>>>>>> OPTION LIST <<<<<<<<<<
-        optionsTitle: {
-            section: 'settings',
-            hidden: content => content.customMenu,
-            type: 'Title',
-            label: {
-                en: 'Options',
-            },
-            editorOnly: true,
-        },
-        // virtualScroll: {
-        //     label: { en: 'Virtual scroll' },
-        //     type: 'OnOff',
-        //     defaultValue: true,
-        //     states: true,
-        //     bindable: true,
-        //     responsive: true,
-        //     section: 'settings',
-        //     hidden: true,
-        //        // },
         virtualScrollBuffer: {
             label: { en: 'Buffer' },
             type: 'Number',
-            defaultValue: 600,
+            defaultValue: 200,
             states: true,
             bindable: true,
             responsive: true,
             section: 'settings',
-            // hidden: content => !content.virtualScroll,
         },
         virtualScrollMinItemSize: {
             label: { en: 'Min item size' },
@@ -640,7 +654,39 @@ export default {
             bindable: true,
             responsive: true,
             section: 'settings',
-            // hidden: content => !content.virtualScroll,
+            hidden: content => content.heavyMode,
+        },
+        heavyMode: {
+            label: { en: 'Heavy mode' },
+            type: 'OnOff',
+            defaultValue: false,
+            states: true,
+            bindable: true,
+            responsive: true,
+            section: 'settings',
+        },
+        heavyModeInfobox: {
+            type: 'InfoBox',
+            section: 'settings',
+            editorOnly: true,
+            options: {
+                variant: 'warning',
+                icon: 'warning',
+                title: 'Dropdown max-height required',
+                content:
+                    'Heavy mode requires a fixed max-height on the dropdown to work properly. Please set the "Max-height" property in the Dropdown section.',
+            },
+            hidden: content => !content.heavyMode || !!content.dropdownMaxHeight,
+        },
+        itemSize: {
+            label: { en: 'Item size' },
+            type: 'Number',
+            defaultValue: 40,
+            states: true,
+            bindable: true,
+            responsive: true,
+            section: 'settings',
+            hidden: content => !content.heavyMode,
         },
         showEmptyStateInEditor: {
             label: { en: 'Show empty state in editor' },
@@ -691,15 +737,6 @@ export default {
         },
 
         // >>>>>>>>>>> SEARCH <<<<<<<<<<
-        searchTitle: {
-            section: 'settings',
-            hidden: content => content.customMenu,
-            type: 'Title',
-            label: {
-                en: 'Search',
-            },
-            editorOnly: true,
-        },
         showSearch: {
             label: { en: 'Search' },
             type: 'OnOff',
@@ -776,11 +813,6 @@ export default {
         /* ------------------------------------
             SELECTED STYLES
         ------------------------------------- */
-        selectedTitle: {
-            type: 'Title',
-            label: { en: 'Selected' },
-            hidden: content => content.selectType !== 'single',
-        },
         selectedFontFamily: {
             label: {
                 en: 'Font family',
@@ -870,10 +902,6 @@ export default {
         /* ------------------------------------
             PLACEHOLDER STYLES
         ------------------------------------- */
-        placeholderTitle: {
-            type: 'Title',
-            label: { en: 'Placeholder' },
-        },
         placeholderFontFamily: {
             label: {
                 en: 'Font family',
@@ -959,14 +987,6 @@ export default {
         /* ------------------------------------
             CHIP STYLES
         ------------------------------------- */
-        chipStylesTitle: {
-            type: 'Title',
-            label: {
-                en: 'Chip',
-            },
-            editorOnly: true,
-            hidden: content => content.selectType == 'single',
-        },
         chipFontFamily: {
             label: {
                 en: 'Font family',
@@ -1254,13 +1274,6 @@ export default {
         /* ------------------------------------
             TRIGGER STYLES
         ------------------------------------- */
-        triggerStylesTitle: {
-            type: 'Title',
-            label: {
-                en: 'Trigger',
-            },
-            editorOnly: true,
-        },
         // triggerWidth: {
         //     type: 'Length',
         //     label: {
@@ -1527,13 +1540,6 @@ export default {
         /* ------------------------------------
             DROPDOWN STYLES
         ------------------------------------- */
-        dropdownStylesTitle: {
-            type: 'Title',
-            label: {
-                en: 'Dropdown',
-            },
-            editorOnly: true,
-        },
         dropdownWidth: {
             type: 'Length',
             label: {
@@ -1574,6 +1580,19 @@ export default {
             bindable: true,
             responsive: true,
             bindable: true,
+        },
+        noMaxHeightInfobox: {
+            type: 'InfoBox',
+            editorOnly: true,
+            options: content => ({
+                variant: 'warning',
+                icon: 'warning',
+                title: 'Many options detected',
+                content: `You have ${
+                    content.choices?.length || 0
+                } options and no max-height has been set. A default max-height of 500px has been applied to the dropdown to prevent performance issues.`,
+            }),
+            hidden: content => !!content.dropdownMaxHeight || !content.choices?.length || content.choices.length <= 100,
         },
         dropdownBorder: {
             type: 'TextRadioGroup',
@@ -1715,13 +1734,6 @@ export default {
         /* ------------------------------------
             OPTION STYLES
         ------------------------------------- */
-        optionStylesTitle: {
-            type: 'Title',
-            label: {
-                en: 'Option',
-            },
-            editorOnly: true,
-        },
         optionFontFamily: {
             label: {
                 en: 'Font family',
@@ -1999,13 +2011,6 @@ export default {
         /* ------------------------------------
             EMPTY STYLES
         ------------------------------------- */
-        emptyStateStylesTitle: {
-            type: 'Title',
-            label: {
-                en: 'Empty state',
-            },
-            editorOnly: true,
-        },
         emptyStateFontFamily: {
             label: {
                 en: 'Font family',
@@ -2101,14 +2106,6 @@ export default {
         /* ------------------------------------
             SEARCH STYLES
         ------------------------------------- */
-        searchStylesTitle: {
-            type: 'Title',
-            label: {
-                en: 'Search',
-            },
-            editorOnly: true,
-            hidden: content => !content.showSearch,
-        },
         searchWidth: {
             type: 'Length',
             label: {
